@@ -4,6 +4,7 @@ import cors from "cors";
 import morgan from "morgan";
 import { authRoutes } from "./routes/authRoutes.js";
 import { errorMiddleware } from "./middlewares/errorMiddleware.js";
+import mongoose from "mongoose";
 
 const app = express();
 
@@ -20,6 +21,17 @@ app.use("/api/v1/auth", authRoutes);
 app.use(errorMiddleware);
 
 const PORT = process.env.PORT || 4000;
-app.listen(PORT, () => {
-  console.log(`Listening on port ${PORT}`);
-});
+
+mongoose.set("strictQuery", true);
+mongoose
+  .connect(process.env.MONGO_URI)
+  .then((data) => {
+    app.listen(PORT, () => {
+      console.log(`MongoDB connected with server ${data.connection.host}`);
+      console.log(`Listening on port ${PORT}`);
+    });
+  })
+  .catch((err) => {
+    console.log("Database connection failed. server not started");
+    console.log(err);
+  });
