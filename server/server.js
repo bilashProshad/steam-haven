@@ -5,11 +5,13 @@ import morgan from "morgan";
 import { authRoutes } from "./routes/authRoutes.js";
 import { errorMiddleware } from "./middlewares/errorMiddleware.js";
 import mongoose from "mongoose";
+import cookieParser from "cookie-parser";
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
+app.use(cookieParser());
 app.use(morgan("dev"));
 
 app.get("/", (req, res) => {
