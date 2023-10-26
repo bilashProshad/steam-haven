@@ -49,7 +49,8 @@ const Register = () => {
 
   useEffect(() => {
     if (error) {
-      toast.error(error);
+      toast.error(error.data);
+      toast.error(error.data?.message);
       dispatch({ type: CLEAR_ERROR });
     }
   }, [error, dispatch]);
@@ -96,8 +97,7 @@ const Register = () => {
       });
       dispatch({ type: LOGIN_SUCCESS, payload: data.user });
     } catch (error) {
-      console.log(error);
-      dispatch({ type: LOGIN_FAILED, payload: error.response.data });
+      dispatch({ type: LOGIN_FAILED, payload: error.response });
     }
   };
 

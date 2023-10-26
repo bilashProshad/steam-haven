@@ -33,7 +33,8 @@ const Login = () => {
 
   useEffect(() => {
     if (error) {
-      toast.error(error);
+      toast.error(error.data);
+      toast.error(error.data?.message);
       dispatch({ type: CLEAR_ERROR });
     }
   }, [error, dispatch]);
@@ -63,7 +64,7 @@ const Login = () => {
       });
       dispatch({ type: LOGIN_SUCCESS, payload: data.user });
     } catch (error) {
-      dispatch({ type: LOGIN_FAILED, payload: error.response.data });
+      dispatch({ type: LOGIN_FAILED, payload: error.response });
     }
   };
 
