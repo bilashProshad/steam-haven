@@ -6,6 +6,7 @@ import { ThemeProvider, createGlobalStyle } from "styled-components";
 import { useEffect, useState } from "react";
 import { darkTheme, lightTheme } from "./utils/Theme";
 import { ToastContainer } from "react-toastify";
+import PublicRoute from "./components/RoutesCondition/PublicRoute";
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -29,8 +30,10 @@ const App = () => {
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
+            <Route element={<PublicRoute />}>
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+            </Route>
           </Routes>
           <ToastContainer />
         </BrowserRouter>
