@@ -5,6 +5,7 @@ import Register from "./pages/Register";
 import { ThemeProvider, createGlobalStyle } from "styled-components";
 import { useEffect, useState } from "react";
 import { darkTheme, lightTheme } from "./utils/Theme";
+import { ToastContainer } from "react-toastify";
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -31,6 +32,7 @@ const App = () => {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
           </Routes>
+          <ToastContainer />
         </BrowserRouter>
       </ThemeProvider>
     </>

@@ -7,6 +7,16 @@ import FormGroup from "../components/FormGroup";
 import Input from "../components/Input";
 import FormTitle from "../components/FormTitle";
 import { useInputValidate } from "../hooks/useInputValidate";
+import { useAuthContext } from "../contexts/AuthContext";
+import {
+  CLEAR_ERROR,
+  LOGIN_FAILED,
+  LOGIN_REQUEST,
+  LOGIN_SUCCESS,
+} from "../contexts/constants/AuthConstant";
+import api from "../http";
+import { useEffect } from "react";
+import { toast } from "react-toastify";
 
 const Login = () => {
   const [email, setEmail, emailError, setEmailError, isEmailTouched] =
@@ -19,14 +29,23 @@ const Login = () => {
     isPasswordTouched,
   ] = useInputValidate();
 
-  const submitHandler = (e) => {
+  const { loading, error, dispatch } = useAuthContext();
+
+  useEffect(() => {
+    if (error) {
+      toast.error(error);
+      dispatch({ type: CLEAR_ERROR });
+    }
+  }, [error, dispatch]);
+
+  const submitHandler = async (e) => {
     e.preventDefault();
 
     if (passwordError || emailError) {
       return;
     }
 
-    if (email === "") {
+    if (email === "" || !email.includes("@")) {
       setEmailError(true);
       return;
     }
@@ -35,46 +54,63 @@ const Login = () => {
       setPasswordError(true);
       return;
     }
+
+    try {
+      dispatch({ type: LOGIN_REQUEST });
+      const { data } = await api.post(`/api/v1/auth/login`, {
+        email,
+        password,
+      });
+      dispatch({ type: LOGIN_SUCCESS, payload: data.user });
+    } catch (error) {
+      dispatch({ type: LOGIN_FAILED, payload: error.response.data });
+    }
   };
 
   return (
-    <Container>
-      <Wrapper>
-        <FormTitle title={"Login"} logo={logo} href="/" />
-        <Form onSubmit={submitHandler}>
-          <FormGroup>
-            <Label htmlFor="email">Email</Label>
-            <Input
-              type="email"
-              id="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              onBlur={isEmailTouched}
-              required
-            />
-            {emailError && <ErrorMessage>** Enter a valid email</ErrorMessage>}
-          </FormGroup>
-          <FormGroup>
-            <Label htmlFor="password">Password</Label>
-            <Input
-              type="password"
-              id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              onBlur={isPasswordTouched}
-              required
-            />
-            {passwordError && (
-              <ErrorMessage>** Enter your password</ErrorMessage>
-            )}
-          </FormGroup>
-          <RegisterLink to={"/register"}>
-            Don&apos;t have an account?
-          </RegisterLink>
-          <Button type="submit">Log in</Button>
-        </Form>
-      </Wrapper>
-    </Container>
+    <>
+      <Container>
+        <Wrapper>
+          <FormTitle title={"Login"} logo={logo} href="/" />
+          <Form onSubmit={submitHandler}>
+            <FormGroup>
+              <Label htmlFor="email">Email</Label>
+              <Input
+                type="email"
+                id="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                onBlur={isEmailTouched}
+                required
+              />
+              {emailError && (
+                <ErrorMessage>** Enter a valid email</ErrorMessage>
+              )}
+            </FormGroup>
+            <FormGroup>
+              <Label htmlFor="password">Password</Label>
+              <Input
+                type="password"
+                id="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                onBlur={isPasswordTouched}
+                required
+              />
+              {passwordError && (
+                <ErrorMessage>** Enter your password</ErrorMessage>
+              )}
+            </FormGroup>
+            <RegisterLink to={"/register"}>
+              Don&apos;t have an account?
+            </RegisterLink>
+            <Button type="submit" disabled={loading} loading={loading}>
+              Login
+            </Button>
+          </Form>
+        </Wrapper>
+      </Container>
+    </>
   );
 };
 

@@ -7,7 +7,16 @@ import FormGroup from "../components/FormGroup";
 import Input from "../components/Input";
 import FormTitle from "../components/FormTitle";
 import { useInputValidate } from "../hooks/useInputValidate";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import {
+  CLEAR_ERROR,
+  LOGIN_FAILED,
+  LOGIN_REQUEST,
+  LOGIN_SUCCESS,
+} from "../contexts/constants/AuthConstant";
+import api from "../http";
+import { useAuthContext } from "../contexts/AuthContext";
+import { toast } from "react-toastify";
 
 const Register = () => {
   const [
@@ -36,7 +45,16 @@ const Register = () => {
 
   const [matchPassword, setMatchPassword] = useState(true);
 
-  const submitHandler = (e) => {
+  const { loading, error, dispatch } = useAuthContext();
+
+  useEffect(() => {
+    if (error) {
+      toast.error(error);
+      dispatch({ type: CLEAR_ERROR });
+    }
+  }, [error, dispatch]);
+
+  const submitHandler = async (e) => {
     e.preventDefault();
 
     if (usernameError || emailError || passwordError || confirmPasswordError) {
@@ -48,7 +66,7 @@ const Register = () => {
       return;
     }
 
-    if (email === "") {
+    if (email === "" || !email.includes("@")) {
       setEmailError(true);
       return;
     }
@@ -66,6 +84,20 @@ const Register = () => {
     if (password !== confirmPassword) {
       setMatchPassword(false);
       return;
+    }
+
+    try {
+      dispatch({ type: LOGIN_REQUEST });
+      const { data } = await api.post(`/api/v1/auth/register`, {
+        username,
+        email,
+        password,
+        confirmPassword,
+      });
+      dispatch({ type: LOGIN_SUCCESS, payload: data.user });
+    } catch (error) {
+      console.log(error);
+      dispatch({ type: LOGIN_FAILED, payload: error.response.data });
     }
   };
 
@@ -124,7 +156,7 @@ const Register = () => {
               onBlur={isConfirmPasswordTouched}
               required
             />
-            {passwordError && (
+            {confirmPasswordError && (
               <ErrorMessage>** Enter your password</ErrorMessage>
             )}
             {!matchPassword && (
@@ -134,7 +166,9 @@ const Register = () => {
             )}
           </FormGroup>
           <RegisterLink to={"/login"}>Have an account?</RegisterLink>
-          <Button type="submit">Log in</Button>
+          <Button type="submit" disabled={loading} loading={loading}>
+            Register
+          </Button>
         </Form>
       </Wrapper>
     </Container>
