@@ -6,7 +6,11 @@ const userSchema = new mongoose.Schema(
   {
     username: { type: String },
     email: { type: String, unique: true },
-    password: { type: String },
+    password: { type: String, select: false },
+    channel: { type: mongoose.Schema.Types.ObjectId, ref: "Channel" },
+    followedChannels: {
+      type: [{ type: mongoose.Schema.Types.ObjectId, ref: "Channel" }],
+    },
   },
   {
     timestamps: true,

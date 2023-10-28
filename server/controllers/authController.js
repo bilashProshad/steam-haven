@@ -1,4 +1,5 @@
 import { catchAsyncErrors } from "../middlewares/catchAsyncErrors.js";
+import { Channel } from "../models/Channel.js";
 import { User } from "../models/User.js";
 import { ErrorHandler } from "../utils/ErrorHandler.js";
 import { sendToken } from "../utils/sendJwtToken.js";
@@ -19,7 +20,13 @@ export const register = catchAsyncErrors(async (req, res, next) => {
     );
   }
 
-  user = await User.create({ username, email: email.toLowerCase(), password });
+  // user = await User.create({ username, email: email.toLowerCase(), password });
+  user = await new User({ username, email: email.toLowerCase(), password });
+  const channel = await new Channel({ owner: user._id });
+  user.channel = channel._id;
+
+  await user.save();
+  await channel.save();
 
   sendToken(user, 201, res);
 });
@@ -27,7 +34,9 @@ export const register = catchAsyncErrors(async (req, res, next) => {
 export const login = catchAsyncErrors(async (req, res, next) => {
   const { email, password } = req.body;
 
-  const user = await User.findOne({ email: email.toLowerCase() });
+  const user = await User.findOne({ email: email.toLowerCase() }).select(
+    "+password"
+  );
   if (!user) {
     return next(new ErrorHandler(401, "Invalid email or password"));
   }

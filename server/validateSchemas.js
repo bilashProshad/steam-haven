@@ -12,3 +12,8 @@ export const loginSchema = Joi.object({
   email: Joi.string().email().required(),
   password: Joi.string().min(6).max(12).required(),
 });
+
+// channel schemas
+export const channelDetailsSchema = Joi.object({
+  channelId: Joi.string().required(),
+});
