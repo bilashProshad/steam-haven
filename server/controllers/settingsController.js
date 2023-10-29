@@ -1,6 +1,8 @@
 import { catchAsyncErrors } from "../middlewares/catchAsyncErrors.js";
 import { Channel } from "../models/Channel.js";
 import { User } from "../models/User.js";
+import { ErrorHandler } from "../utils/ErrorHandler.js";
+import { sendToken } from "../utils/sendJwtToken.js";
 
 export const getChannelSettings = catchAsyncErrors(async (req, res, next) => {
   const user = req.user;
@@ -40,5 +42,32 @@ export const updateChannelSettings = catchAsyncErrors(
       success: true,
       channel,
     });
+  }
+);
+
+export const changeChannelPassword = catchAsyncErrors(
+  async (req, res, next) => {
+    const user = req.user;
+
+    const { oldPassword, newPassword, confirmPassword } = req.body;
+
+    const userData = await User.findById(user._id).select("+password");
+
+    if (newPassword !== confirmPassword) {
+      return next(
+        new ErrorHandler(400, "New password and Confirm password must be same.")
+      );
+    }
+
+    const passwordMatched = await userData.comparePassword(oldPassword);
+    if (!passwordMatched) {
+      return next(new ErrorHandler(400, "Invalid password. Please try again."));
+    }
+
+    userData.password = newPassword;
+
+    await userData.save();
+
+    sendToken(userData, 200, res);
   }
 );

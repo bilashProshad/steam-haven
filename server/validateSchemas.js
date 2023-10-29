@@ -24,3 +24,9 @@ export const channelSettingsSchema = Joi.object({
   title: Joi.string().min(3).max(40).required(),
   avatar: Joi.string().uri(),
 });
+
+export const changePasswordSchema = Joi.object({
+  oldPassword: Joi.string().min(6).max(12).required(),
+  newPassword: Joi.string().min(6).max(12).required(),
+  confirmPassword: Joi.string().min(6).max(12).required(),
+});
