@@ -17,3 +17,10 @@ export const loginSchema = Joi.object({
 export const channelDetailsSchema = Joi.object({
   channelId: Joi.string().required(),
 });
+
+export const channelSettingsSchema = Joi.object({
+  username: Joi.string().min(3).max(12).required(),
+  description: Joi.string().min(10).max(200).required(),
+  title: Joi.string().min(3).max(40).required(),
+  avatar: Joi.string().uri(),
+});

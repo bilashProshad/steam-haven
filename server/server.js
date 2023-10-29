@@ -6,6 +6,8 @@ import { authRoutes } from "./routes/authRoutes.js";
 import { errorMiddleware } from "./middlewares/errorMiddleware.js";
 import mongoose from "mongoose";
 import cookieParser from "cookie-parser";
+import { channelRoutes } from "./routes/channelRoutes.js";
+import { settingsRoutes } from "./routes/settingsRoutes.js";
 
 const app = express();
 
@@ -21,6 +23,8 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/v1/auth", authRoutes);
+app.use("/api/v1/channels", channelRoutes);
+app.use("/api/v1/settings", settingsRoutes);
 
 app.use(errorMiddleware);
 
