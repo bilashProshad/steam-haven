@@ -23,6 +23,7 @@ const channelSchema = new mongoose.Schema(
       type: [{ type: mongoose.Schema.Types.ObjectId, ref: "Message" }],
       default: [],
     },
+    followers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
   },
   {
     timestamps: true,

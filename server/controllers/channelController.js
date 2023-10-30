@@ -1,6 +1,52 @@
 import { catchAsyncErrors } from "../middlewares/catchAsyncErrors.js";
 import { Channel } from "../models/Channel.js";
+import { User } from "../models/User.js";
 import { ErrorHandler } from "../utils/ErrorHandler.js";
+
+export const followChannel = catchAsyncErrors(async (req, res, next) => {
+  const { _id: userId } = req.user;
+  const { channelId } = req.body;
+
+  const channel = await Channel.findByIdAndUpdate(
+    channelId,
+    {
+      $addToSet: { followers: userId },
+    },
+    { new: true }
+  );
+  if (!channel) {
+    return next(new ErrorHandler(404, "Channel not found."));
+  }
+
+  const user = await User.findByIdAndUpdate(
+    userId,
+    {
+      $addToSet: { followedChannels: channelId },
+    },
+    { new: true }
+  );
+
+  res.status(200).json({
+    success: true,
+    user,
+    channel,
+    message: "Channel followed successfully",
+  });
+});
+
+export const getFollowedChannel = catchAsyncErrors(async (req, res, next) => {
+  const { _id: userId } = req.user;
+
+  const channels = await Channel.find({ followers: userId }).populate(
+    "owner",
+    "username"
+  );
+
+  res.status(200).json({
+    success: true,
+    channels,
+  });
+});
 
 export const getChannelDetails = catchAsyncErrors(async (req, res, next) => {
   const { channelId } = req.params;
