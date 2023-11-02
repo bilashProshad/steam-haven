@@ -1,8 +1,9 @@
 export const lightTheme = {
   background: "#f7f7f7",
-  text: "#2a2055",
+  text: "#000",
   textSecondary: "#fff",
   backgroundForm: "#ffffff",
+  btnBackground: "hsl(0, 0%, 93%)",
   highLight: "#e74c3c",
   primary: "#2a2055",
   // primaryHover: "#3b2d77",

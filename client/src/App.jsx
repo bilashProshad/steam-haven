@@ -30,6 +30,9 @@ const App = () => {
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/channels" element={<h2>Channels</h2>} />
+            <Route path="/channel/:id" element={<h2>Single Channel</h2>} />
+            <Route path="/settings" element={<h2>Settings</h2>} />
             <Route element={<PublicRoute />}>
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
