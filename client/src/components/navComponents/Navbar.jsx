@@ -65,6 +65,8 @@ const Header = styled.header`
   background-color: ${(props) => props.theme.backgroundForm};
   box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
   z-index: 90;
+  position: sticky;
+  top: 0;
 `;
 
 const LogoLink = styled(Link)`

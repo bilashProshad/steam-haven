@@ -22,6 +22,6 @@ const Container = styled.div`
 
 const Main = styled.div`
   width: 100%;
-  /* padding: 1rem; */
+  padding: 1rem;
   overflow-x: hidden;
 `;
