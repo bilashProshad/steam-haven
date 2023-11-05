@@ -1,16 +1,12 @@
-import styled from "styled-components";
+import Channels from "../components/Channels";
 import Layout from "../components/Layout";
 
 const Home = () => {
   return (
     <Layout>
-      <Item>Home</Item>
+      <Channels />
     </Layout>
   );
 };
 
 export default Home;
-
-const Item = styled.div`
-  height: 200vh;
-`;
