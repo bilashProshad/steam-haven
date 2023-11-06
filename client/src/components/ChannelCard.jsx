@@ -28,7 +28,8 @@ const Card = styled(Link)`
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  /* gap: 1rem; */
+  box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.1);
 `;
 
 const Thumbnail = styled.img`
@@ -45,6 +46,7 @@ const Thumbnail = styled.img`
 const Details = styled.div`
   display: flex;
   justify-content: space-between;
+  padding: 1rem;
 `;
 
 const Left = styled.div`

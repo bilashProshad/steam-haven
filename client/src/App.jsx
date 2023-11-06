@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { darkTheme, lightTheme } from "./utils/Theme";
 import { ToastContainer } from "react-toastify";
 import PublicRoute from "./components/RoutesCondition/PublicRoute";
+import ChannelView from "./pages/ChannelView";
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -31,7 +32,7 @@ const App = () => {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/channels" element={<h2>Channels</h2>} />
-            <Route path="/channel/:id" element={<h2>Single Channel</h2>} />
+            <Route path="/channel/:id" element={<ChannelView />} />
             <Route path="/settings" element={<h2>Settings</h2>} />
             <Route element={<PublicRoute />}>
               <Route path="/login" element={<Login />} />
