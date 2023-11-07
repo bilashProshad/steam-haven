@@ -8,6 +8,10 @@ import { darkTheme, lightTheme } from "./utils/Theme";
 import { ToastContainer } from "react-toastify";
 import PublicRoute from "./components/RoutesCondition/PublicRoute";
 import ChannelView from "./pages/ChannelView";
+import ProtectedRoute from "./components/RoutesCondition/ProtectedRoute";
+import Settings from "./pages/Settings";
+import Profile from "./pages/Profile";
+import ChangePassword from "./pages/ChangePassword";
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -33,10 +37,19 @@ const App = () => {
             <Route path="/" element={<Home />} />
             <Route path="/channels" element={<h2>Channels</h2>} />
             <Route path="/channel/:id" element={<ChannelView />} />
-            <Route path="/settings" element={<h2>Settings</h2>} />
+
             <Route element={<PublicRoute />}>
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
+            </Route>
+
+            <Route element={<ProtectedRoute />}>
+              <Route path="/profile" element={<Profile />} />
+              <Route
+                path="/profile/password/change"
+                element={<ChangePassword />}
+              />
+              <Route path="/settings" element={<Settings />} />
             </Route>
           </Routes>
           <ToastContainer />

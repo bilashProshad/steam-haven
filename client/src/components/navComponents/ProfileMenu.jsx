@@ -22,10 +22,10 @@ const ProfileMenu = () => {
         createPortal(
           <MenuList>
             <MenuItem>
-              <MenuLink to={"/"}>Profile</MenuLink>
+              <MenuLink to={"/profile"}>Profile</MenuLink>
             </MenuItem>
             <MenuItem>
-              <MenuLink to={"/"}>Profile</MenuLink>
+              <MenuLink to={"/settings"}>Settings</MenuLink>
             </MenuItem>
             <MenuItem>
               <MenuLink to={"/"}>Profile</MenuLink>
