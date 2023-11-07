@@ -7,14 +7,15 @@ const StyledButton = styled.button`
   padding: 1rem;
   border: none;
   border-radius: 0.5rem;
-  background-color: ${(props) => props.theme.primary};
+  /* background-color: ${(props) => props.theme.primary}; */
+  background-color: ${(props) => props.theme[props.color]};
   color: ${(props) => props.theme.textSecondary};
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
 
   &:hover {
-    background-color: ${(props) => props.theme.primaryHover};
+    background-color: ${(props) => props.theme[props.color + "Hover"]};
   }
 `;
 
@@ -42,10 +43,11 @@ const Button = ({
   loading = false,
   type,
   disabled = false,
+  color = "primary",
   ...rest
 }) => {
   return (
-    <StyledButton disabled={disabled} type={type} {...rest}>
+    <StyledButton disabled={disabled} type={type} {...rest} color={color}>
       {!loading ? (
         <Text>{children}</Text>
       ) : (

@@ -38,15 +38,21 @@ const Navbar = () => {
           <NavItem>
             <SearchBarSm />
           </NavItem>
-          {/* <NavItem> */}
-          <NavButton to={"/login"}>Login</NavButton>
-          {/* </NavItem> */}
-          {/* <NavItem> */}
-          <NavButtonPrimary to={"/register"}>Register</NavButtonPrimary>
-          {/* </NavItem> */}
-          {/* <NavItem> */}
-          {user && <ProfileMenu />}
-          {/* </NavItem> */}
+          {!user && (
+            <>
+              <NavItem>
+                <NavButton to={"/login"}>Login</NavButton>
+              </NavItem>
+              <NavItem>
+                <NavButtonPrimary to={"/register"}>Register</NavButtonPrimary>
+              </NavItem>
+            </>
+          )}
+          {user && (
+            <NavItem>
+              <ProfileMenu />
+            </NavItem>
+          )}
           <ProfileMenuSm />
         </NavLists>
       </Nav>
