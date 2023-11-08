@@ -7,6 +7,14 @@ const userSchema = new mongoose.Schema(
     username: { type: String },
     email: { type: String, unique: true },
     password: { type: String, select: false },
+    avatar: {
+      public_id: {
+        type: String,
+      },
+      url: {
+        type: String,
+      },
+    },
     channel: { type: mongoose.Schema.Types.ObjectId, ref: "Channel" },
     followedChannels: {
       type: [{ type: mongoose.Schema.Types.ObjectId, ref: "Channel" }],

@@ -8,6 +8,7 @@ import mongoose from "mongoose";
 import cookieParser from "cookie-parser";
 import { channelRoutes } from "./routes/channelRoutes.js";
 import { settingsRoutes } from "./routes/settingsRoutes.js";
+import { userRoutes } from "./routes/userRoutes.js";
 
 const app = express();
 
@@ -23,6 +24,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/v1/auth", authRoutes);
+app.use("/api/v1/user", userRoutes);
 app.use("/api/v1/channels", channelRoutes);
 app.use("/api/v1/settings", settingsRoutes);
 
