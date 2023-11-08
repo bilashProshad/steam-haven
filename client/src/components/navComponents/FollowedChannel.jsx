@@ -6,7 +6,7 @@ const FollowedChannel = ({ data, collapse }) => {
     <Container to={`/${data._id}`}>
       <Left>
         <Avatar src={data?.avatar} />
-        {!collapse && <Username collapse={collapse}>{data?.username}</Username>}
+        {!collapse && <Username>{data?.username}</Username>}
       </Left>
       {/* --- */}
       {!collapse && <Right>{data.isOnline ? <Online /> : <Offline />}</Right>}

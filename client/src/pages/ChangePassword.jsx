@@ -147,7 +147,7 @@ const Wrapper = styled.div`
 
   @media screen and (max-width: 600px) {
     padding-top: 5rem;
-    height: 100svh;
+    height: calc(100svh - 8rem);
     width: 100%;
     border-radius: 0;
   }

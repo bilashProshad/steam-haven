@@ -17,7 +17,7 @@ const Navbar = () => {
       </LogoLink>
 
       <Nav>
-        <NavLists>
+        <LinksContainer>
           <NavItem>
             <NavLink to={"/"}>Browse</NavLink>
           </NavItem>
@@ -26,7 +26,7 @@ const Navbar = () => {
               <NavLink to={"/"}>Followed</NavLink>
             </NavItem>
           )}
-        </NavLists>
+        </LinksContainer>
 
         <NavLists>
           <NavItem>
@@ -49,11 +49,13 @@ const Navbar = () => {
             </>
           )}
           {user && (
-            <NavItem>
+            <ProfileMenuItem>
               <ProfileMenu />
-            </NavItem>
+            </ProfileMenuItem>
           )}
-          <ProfileMenuSm />
+          <ProfileMenuItemSm>
+            <ProfileMenuSm />
+          </ProfileMenuItemSm>
         </NavLists>
       </Nav>
     </Header>
@@ -102,7 +104,27 @@ const NavLists = styled.ul`
   gap: 1rem;
 `;
 
+const LinksContainer = styled(NavLists)`
+  @media screen and (max-width: 450px) {
+    display: none;
+  }
+`;
+
 const NavItem = styled.li``;
+
+const ProfileMenuItem = styled(NavItem)`
+  @media screen and (max-width: 600px) {
+    display: none;
+  }
+`;
+
+const ProfileMenuItemSm = styled(NavItem)`
+  display: none;
+
+  @media screen and (max-width: 600px) {
+    display: initial;
+  }
+`;
 
 const NavLink = styled(Link)`
   text-decoration: none;

@@ -46,7 +46,16 @@ const ProfileMenuSm = () => {
             {user && (
               <>
                 <MenuItem>
-                  <MenuLink to={"/"}>Profile</MenuLink>
+                  <MenuLink to={"/profile"}>Profile</MenuLink>
+                </MenuItem>
+                <MenuItemSM>
+                  <MenuLink to={"/browse"}>Browse</MenuLink>
+                </MenuItemSM>
+                <MenuItemSM>
+                  <MenuLink to={"/followed"}>Followed</MenuLink>
+                </MenuItemSM>
+                <MenuItem>
+                  <MenuLink to={"/settings"}>Settings</MenuLink>
                 </MenuItem>
                 <MenuItem>
                   <MenuButton>Logout</MenuButton>
@@ -72,10 +81,6 @@ const Profile = styled.button`
   border-radius: 50%;
   width: 4rem;
   height: 4rem;
-
-  @media screen and (min-width: 601px) {
-    display: none;
-  }
 `;
 
 const ProfileImgContainer = styled.div`
@@ -144,6 +149,13 @@ const MenuItem = styled.li`
   }
 `;
 
+const MenuItemSM = styled(MenuItem)`
+  display: none;
+  @media screen and (max-width: 450px) {
+    display: block;
+  }
+`;
+
 const MenuLink = styled(Link)`
   text-decoration: none;
   font-weight: 500;
@@ -161,6 +173,7 @@ const MenuButton = styled.button`
   align-items: center;
   padding: 0.8rem 1.2rem;
   font-weight: 500;
+  font-size: 1.6rem;
   border-radius: 5px;
   border: none;
   background-color: ${(props) => props.theme.danger};

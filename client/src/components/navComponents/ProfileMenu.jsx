@@ -112,6 +112,7 @@ const MenuButton = styled.button`
   align-items: center;
   padding: 0.8rem 1.2rem;
   font-weight: 500;
+  font-size: 1.6rem;
   border-radius: 5px;
   border: none;
   background-color: ${(props) => props.theme.danger};
