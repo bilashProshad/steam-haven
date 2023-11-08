@@ -9,6 +9,9 @@ import {
   REGISTER_FAILED,
   REGISTER_REQUEST,
   REGISTER_SUCCESS,
+  UPDATE_PROFILE_FAILED,
+  UPDATE_PROFILE_REQUEST,
+  UPDATE_PROFILE_SUCCESS,
 } from "../constants/AuthConstant";
 
 export const AuthReducer = (state, action) => {
@@ -16,6 +19,7 @@ export const AuthReducer = (state, action) => {
     case LOGIN_REQUEST:
     case REGISTER_REQUEST:
     case LOGOUT_REQUEST:
+    case UPDATE_PROFILE_REQUEST:
       return {
         ...state,
         loading: true,
@@ -23,6 +27,7 @@ export const AuthReducer = (state, action) => {
 
     case LOGIN_SUCCESS:
     case REGISTER_SUCCESS:
+    case UPDATE_PROFILE_SUCCESS:
       return {
         ...state,
         user: action.payload,
@@ -39,6 +44,7 @@ export const AuthReducer = (state, action) => {
     case LOGIN_FAILED:
     case REGISTER_FAILED:
     case LOGOUT_FAILED:
+    case UPDATE_PROFILE_FAILED:
       return {
         ...state,
         loading: false,

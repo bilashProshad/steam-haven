@@ -24,4 +24,8 @@ const Main = styled.div`
   width: 100%;
   padding: 1rem;
   overflow-x: hidden;
+
+  @media screen and (max-width: 600px) {
+    padding: 0;
+  }
 `;

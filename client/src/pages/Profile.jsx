@@ -6,21 +6,40 @@ import FormGroup from "../components/FormGroup";
 import Input from "../components/Input";
 import { useInputValidate } from "../hooks/useInputValidate";
 import Layout from "../components/Layout";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { useAuthContext } from "../contexts/AuthContext";
+import { toast } from "react-toastify";
+import {
+  CLEAR_ERROR,
+  UPDATE_PROFILE_FAILED,
+  UPDATE_PROFILE_REQUEST,
+  UPDATE_PROFILE_SUCCESS,
+} from "../contexts/constants/AuthConstant";
+import api from "../http";
 
 const Profile = () => {
+  const { user, error, dispatch, loading } = useAuthContext();
+
   const [
     username,
     setUsername,
     usernameError,
     setUsernameError,
     isUsernameTouched,
-  ] = useInputValidate();
+  ] = useInputValidate(user?.username);
   const [email, setEmail, emailError, setEmailError, isEmailTouched] =
-    useInputValidate();
+    useInputValidate(user?.email);
 
   const [edit, setEdit] = useState(false);
+
+  useEffect(() => {
+    if (error) {
+      toast.error(error.data);
+      toast.error(error.data?.message);
+      dispatch({ type: CLEAR_ERROR });
+    }
+  }, [error, dispatch]);
 
   const submitHandler = async (e) => {
     e.preventDefault();
@@ -37,6 +56,19 @@ const Profile = () => {
     if (email === "" || !email.includes("@")) {
       setEmailError(true);
       return;
+    }
+
+    try {
+      dispatch({ type: UPDATE_PROFILE_REQUEST });
+      const { data } = await api.put(`/api/v1/user/me`, {
+        username,
+        email,
+      });
+      dispatch({ type: UPDATE_PROFILE_SUCCESS, payload: data.user });
+      toast.success("User updated successfully");
+      setEdit(false);
+    } catch (error) {
+      dispatch({ type: UPDATE_PROFILE_FAILED, payload: error.response });
     }
   };
 
@@ -82,10 +114,18 @@ const Profile = () => {
 
             <A to={`/profile/password/change`}>Change Your Password?</A>
 
-            {edit && <Button type="submit">Update</Button>}
+            {edit && (
+              <Button loading={loading} disabled={loading} type="submit">
+                Update
+              </Button>
+            )}
           </Form>
           {edit && (
-            <Button color="danger" onClick={() => setEdit(false)}>
+            <Button
+              disabled={loading}
+              color="danger"
+              onClick={() => setEdit(false)}
+            >
               Cancel
             </Button>
           )}

@@ -15,7 +15,7 @@ export const profile = catchAsyncErrors(async (req, res, next) => {
 export const updateProfile = catchAsyncErrors(async (req, res, next) => {
   const { username, email } = req.body;
 
-  const user = User.findByIdAndUpdate(
+  const user = await User.findByIdAndUpdate(
     req.user._id,
     { username, email },
     { new: true }

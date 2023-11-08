@@ -8,6 +8,8 @@ import FormTitle from "../components/FormTitle";
 import { useInputValidate } from "../hooks/useInputValidate";
 import Layout from "../components/Layout";
 import { useState } from "react";
+import api from "../http";
+import { toast } from "react-toastify";
 
 const ChangePassword = () => {
   const [
@@ -32,7 +34,7 @@ const ChangePassword = () => {
     isConfirmPasswordTouched,
   ] = useInputValidate();
 
-  const [matchPassword, setMatchPassword] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   const submitHandler = async (e) => {
     e.preventDefault();
@@ -57,8 +59,31 @@ const ChangePassword = () => {
     }
 
     if (newPassword !== confirmPassword) {
-      setMatchPassword(false);
+      toast.error("New Password & Confirm Password must be same");
       return;
+    }
+
+    try {
+      setLoading(true);
+      const { data } = await api.patch("/api/v1/user/password", {
+        oldPassword,
+        newPassword,
+        confirmPassword,
+      });
+      if (data.success) {
+        toast.success("Password updated successfully");
+        setLoading(false);
+        setConfirmPassword("");
+        setNewPassword("");
+        setOldPassword("");
+        return;
+      }
+      toast.error("Something went wrong. Try again later.");
+      setLoading(false);
+    } catch (error) {
+      toast.error(error.response.data);
+      toast.error(error.response.data?.message);
+      setLoading(false);
     }
   };
 
@@ -109,14 +134,11 @@ const ChangePassword = () => {
               {confirmPasswordError && (
                 <ErrorMessage>** Enter your password</ErrorMessage>
               )}
-              {!matchPassword && (
-                <ErrorMessage>
-                  ** New password and confirm password must be same
-                </ErrorMessage>
-              )}
             </FormGroup>
 
-            <Button type="submit">Update</Button>
+            <Button loading={loading} disabled={loading} type="submit">
+              Update
+            </Button>
           </Form>
         </Wrapper>
       </Container>
@@ -162,4 +184,5 @@ const ErrorMessage = styled.span`
   position: absolute;
   color: ${(props) => props.theme.danger};
   bottom: -2rem;
+  /* font-size: 1.2rem; */
 `;
