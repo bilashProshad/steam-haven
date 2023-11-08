@@ -1,19 +1,44 @@
 import styled from "styled-components";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import profile from "../../assets/Profile.png";
 import Backdrop from "../Backdrop";
 import { Link } from "react-router-dom";
 import { createPortal } from "react-dom";
 import { RxPerson } from "react-icons/rx";
 import { useAuthContext } from "../../contexts/AuthContext";
+import api from "../../http";
+import {
+  CLEAR_ERROR,
+  LOGOUT_FAILED,
+  LOGOUT_REQUEST,
+  LOGOUT_SUCCESS,
+} from "../../contexts/constants/AuthConstant";
+import { toast } from "react-toastify";
 
 const ProfileMenuSm = () => {
   const [showMenu, setShowMenu] = useState(false);
 
-  const { user } = useAuthContext();
+  const { user, dispatch, error } = useAuthContext();
 
   const showMenuHandler = () => {
     setShowMenu(!showMenu);
+  };
+
+  useEffect(() => {
+    if (error) {
+      toast.error(error);
+      dispatch({ type: CLEAR_ERROR });
+    }
+  }, [error, dispatch]);
+
+  const handleLogout = async () => {
+    try {
+      dispatch({ type: LOGOUT_REQUEST });
+      await api.get("/api/v1/auth/logout");
+      dispatch({ type: LOGOUT_SUCCESS });
+    } catch (error) {
+      dispatch({ type: LOGOUT_FAILED, payload: error.response.data.message });
+    }
   };
 
   return (
@@ -58,7 +83,7 @@ const ProfileMenuSm = () => {
                   <MenuLink to={"/settings"}>Settings</MenuLink>
                 </MenuItem>
                 <MenuItem>
-                  <MenuButton>Logout</MenuButton>
+                  <MenuButton onClick={handleLogout}>Logout</MenuButton>
                 </MenuItem>
               </>
             )}

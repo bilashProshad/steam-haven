@@ -48,3 +48,11 @@ export const login = catchAsyncErrors(async (req, res, next) => {
 
   sendToken(user, 200, res);
 });
+
+export const logout = catchAsyncErrors(async (req, res, next) => {
+  res.clearCookie("token").status(200).json({
+    success: true,
+    user: null,
+    message: "Successfully logged out",
+  });
+});
