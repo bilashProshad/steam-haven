@@ -89,6 +89,8 @@ const Settings = () => {
         description,
       });
       setLoading(false);
+      setEdit(false);
+      toast.success("Settings are updated");
     } catch (error) {
       setLoading(false);
       toast.error(error.response.data);
