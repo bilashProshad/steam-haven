@@ -8,7 +8,9 @@ import FormTitle from "../components/FormTitle";
 import { useInputValidate } from "../hooks/useInputValidate";
 import Layout from "../components/Layout";
 import TextArea from "../components/TextArea";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import api from "../http";
+import { toast } from "react-toastify";
 
 const Settings = () => {
   const [title, setTitle, titleError, setTitleError, isTitleTouched] =
@@ -28,6 +30,11 @@ const Settings = () => {
     isDescriptionTouched,
   ] = useInputValidate();
 
+  const [loading, setLoading] = useState(false);
+  const [edit, setEdit] = useState(false);
+
+  const [streamKey, setStreamKey] = useState("");
+
   const descriptionRef = useRef();
   useEffect(() => {
     descriptionRef.current.addEventListener("keyup", (e) => {
@@ -37,6 +44,22 @@ const Settings = () => {
     });
   }, []);
 
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const { data } = await api.get("/api/v1/settings/channel");
+        setTitle(data.channel.title);
+        setDescription(data.channel.description);
+        setStreamKey(data.channel.streamKey);
+      } catch (error) {
+        toast.error(error.response.data);
+        toast.error(error.response.data?.message);
+      }
+    };
+
+    fetchSettings();
+  }, [setDescription, setTitle]);
+
   const submitHandler = async (e) => {
     e.preventDefault();
 
@@ -44,7 +67,7 @@ const Settings = () => {
       return;
     }
 
-    if (title === "" || !title.includes("@")) {
+    if (title === "") {
       setTitleError(true);
       return;
     }
@@ -58,22 +81,41 @@ const Settings = () => {
       setDescriptionError(true);
       return;
     }
+
+    try {
+      setLoading(true);
+      await api.put("/api/v1/settings/channel", {
+        title,
+        description,
+      });
+      setLoading(false);
+    } catch (error) {
+      setLoading(false);
+      toast.error(error.response.data);
+      toast.error(error.response.data?.message);
+    }
   };
 
   return (
     <Layout>
       <Container>
         <Wrapper>
-          <FormTitle title={"Settings"} logo={logo} href="/" />
+          <FormTitle logo={logo} />
+          <StreamKeyContainer>
+            <StreamKeyTitle>Stream Key</StreamKeyTitle>
+            <StreamKey>{streamKey}</StreamKey>
+          </StreamKeyContainer>
+
           <Form onSubmit={submitHandler}>
             <FormGroup>
-              <Label htmlFor="email">Title</Label>
+              <Label htmlFor="title">Title</Label>
               <Input
-                type="email"
-                id="email"
+                type="text"
+                id="title"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 onBlur={isTitleTouched}
+                disabled={!edit}
                 required
               />
               {titleError && (
@@ -88,6 +130,7 @@ const Settings = () => {
                 value={avatarUrl}
                 onChange={(e) => setAvatarUrl(e.target.value)}
                 onBlur={isAvatarUrlTouched}
+                disabled={!edit}
                 required
               />
               {avatarUrlError && (
@@ -96,15 +139,16 @@ const Settings = () => {
             </FormGroup>
 
             <FormGroup>
-              <Label htmlFor="email">Description</Label>
+              <Label htmlFor="description">Description</Label>
               <TextArea
                 type="text"
-                id="avatarUrl"
+                id="description"
                 rows={4}
                 ref={descriptionRef}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 onBlur={isDescriptionTouched}
+                disabled={!edit}
                 required
               />
               {descriptionError && (
@@ -112,8 +156,22 @@ const Settings = () => {
               )}
             </FormGroup>
 
-            <Button type="submit">Save Changes</Button>
+            {edit && (
+              <Button loading={loading} disabled={loading} type="submit">
+                Update
+              </Button>
+            )}
           </Form>
+          {edit && (
+            <Button
+              disabled={loading}
+              color="danger"
+              onClick={() => setEdit(false)}
+            >
+              Cancel
+            </Button>
+          )}
+          {!edit && <Button onClick={() => setEdit(true)}>Edit</Button>}
         </Wrapper>
       </Container>
     </Layout>
@@ -159,3 +217,13 @@ const ErrorMessage = styled.span`
   color: ${(props) => props.theme.danger};
   bottom: -2rem;
 `;
+
+const StreamKeyContainer = styled.div`
+  text-align: center;
+  margin-bottom: 2rem;
+  margin-top: 1rem;
+`;
+
+const StreamKeyTitle = styled.h2``;
+
+const StreamKey = styled.span``;

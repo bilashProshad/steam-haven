@@ -21,18 +21,13 @@ export const updateChannelSettings = catchAsyncErrors(
   async (req, res, next) => {
     const user = req.user;
 
-    const { username, description, title, avatar } = req.body;
-
-    if (user.username !== username) {
-      await User.findByIdAndUpdate(user._id, { username });
-    }
+    const { description, title } = req.body;
 
     const channel = await Channel.findByIdAndUpdate(
       user.channel,
       {
         title,
         description,
-        avatar,
         isActive: true,
       },
       { new: true }

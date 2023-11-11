@@ -6,6 +6,7 @@ const TextArea = styled.textarea`
   border-radius: 0.5rem;
   transition: all 0.3s ease;
   color: ${(props) => props.theme.text};
+  resize: none;
 
   &:focus {
     outline: 2px solid ${(props) => props.theme.primary};
