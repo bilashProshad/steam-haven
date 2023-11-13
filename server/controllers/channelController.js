@@ -2,6 +2,7 @@ import { catchAsyncErrors } from "../middlewares/catchAsyncErrors.js";
 import { Channel } from "../models/Channel.js";
 import { User } from "../models/User.js";
 import { ErrorHandler } from "../utils/ErrorHandler.js";
+import jwt from "jsonwebtoken";
 
 export const followChannel = catchAsyncErrors(async (req, res, next) => {
   const { _id: userId } = req.user;
@@ -65,6 +66,33 @@ export const getChannelDetails = catchAsyncErrors(async (req, res, next) => {
 
   const streamUrl = "http";
   const isOnline = false;
+  let following = false;
+
+  const { token } = req.cookies;
+
+  if (!token) {
+    return res.status(200).json({
+      success: true,
+      channel: {
+        _id,
+        title,
+        description,
+        avatar,
+        owner,
+        numberOfFollowers,
+        following,
+        streamUrl,
+        isOnline,
+      },
+    });
+  }
+
+  const decodedData = jwt.verify(token, process.env.JWT_ACCESS_TOKEN_SECRET);
+  const isFollowedUser = await Channel.findOne({
+    _id: channelId,
+    followers: decodedData._id,
+  });
+  following = !!isFollowedUser;
 
   res.status(200).json({
     success: true,
@@ -75,6 +103,7 @@ export const getChannelDetails = catchAsyncErrors(async (req, res, next) => {
       avatar,
       owner,
       numberOfFollowers,
+      following,
       streamUrl,
       isOnline,
     },

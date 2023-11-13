@@ -1,7 +1,35 @@
 import styled from "styled-components";
 import avatar from "../../assets/profile-1.jpg";
+import { useState } from "react";
+import { toast } from "react-toastify";
+import api from "../../http";
 
 const Video = ({ channel }) => {
+  const [followersCount, setFollowersCount] = useState(
+    channel?.numberOfFollowers
+  );
+  const [isFollowing, setIsFollowing] = useState(channel.following);
+
+  const handleFollow = async () => {
+    try {
+      await api.post(`/api/v1/channels/follow`, { channelId: channel._id });
+      setIsFollowing(true);
+      setFollowersCount((prev) => prev + 1);
+    } catch (error) {
+      toast.error(error.response.data.message);
+    }
+  };
+
+  const handleUnfollow = async () => {
+    try {
+      await api.post(`/api/v1/channels/follow`, { channelId: channel._id });
+      setIsFollowing(false);
+      setFollowersCount((prev) => prev - 1);
+    } catch (error) {
+      toast.error(error.response.data.message);
+    }
+  };
+
   return (
     <Container>
       <Stream>This is Video</Stream>
@@ -12,11 +40,14 @@ const Video = ({ channel }) => {
           <ChannelInfo>
             <Username>{channel?.owner?.username}</Username>
             <TotalFollowers>
-              {channel?.numberOfFollowers}{" "}
-              {channel?.numberOfFollowers <= 1 ? "Follower" : "Followers"}
+              {followersCount} {followersCount <= 1 ? "Follower" : "Followers"}
             </TotalFollowers>
           </ChannelInfo>
-          <Follow>Follow</Follow>
+          {!isFollowing ? (
+            <Follow onClick={handleFollow}>Follow</Follow>
+          ) : (
+            <Following onClick={handleUnfollow}>Following</Following>
+          )}
         </Left>
       </Description>
     </Container>
@@ -67,7 +98,7 @@ const Username = styled.h4`
 const TotalFollowers = styled.small``;
 
 const Follow = styled.button`
-  border: none;
+  border: 1px solid ${(props) => props.theme.primary};
   background-color: ${(props) => props.theme.primary};
   color: ${(props) => props.theme.textSecondary};
   padding: 0.8rem 1.2rem;
@@ -77,5 +108,21 @@ const Follow = styled.button`
 
   &:hover {
     background-color: ${(props) => props.theme.primaryHover};
+  }
+`;
+
+const Following = styled.button`
+  border: 2px solid ${(props) => props.theme.primary};
+  background-color: inherit;
+  color: ${(props) => props.theme.primary};
+  font-weight: 500;
+  padding: 0.8rem 1.2rem;
+  border-radius: 50px;
+  transition: all 0.3s;
+  cursor: pointer;
+
+  &:hover {
+    background-color: ${(props) => props.theme.primary};
+    color: ${(props) => props.theme.textSecondary};
   }
 `;
