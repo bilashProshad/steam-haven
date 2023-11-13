@@ -1,12 +1,13 @@
 import styled from "styled-components";
 import { Link } from "react-router-dom";
+import avatar from "../../assets/profile-1.jpg";
 
 const FollowedChannel = ({ data, collapse }) => {
   return (
     <Container to={`/${data._id}`}>
       <Left>
-        <Avatar src={data?.avatar} />
-        {!collapse && <Username>{data?.username}</Username>}
+        <Avatar src={avatar} />
+        {!collapse && <Username>{data?.owner?.username}</Username>}
       </Left>
       {/* --- */}
       {!collapse && <Right>{data.isOnline ? <Online /> : <Offline />}</Right>}

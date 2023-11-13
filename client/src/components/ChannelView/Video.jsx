@@ -1,26 +1,20 @@
 import styled from "styled-components";
 import avatar from "../../assets/profile-1.jpg";
 
-const channelData = {
-  _id: 1,
-  title: "Test 1",
-  username: "Bilash",
-  avatar:
-    "https://images.unsplash.com/photo-1593305841991-05c297ba4575?auto=format&fit=crop&q=80&w=1957&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-  isOnline: false,
-};
-
-const Video = () => {
+const Video = ({ channel }) => {
   return (
     <Container>
       <Stream>This is Video</Stream>
       <Description>
-        <Title>{channelData.title}</Title>
+        <Title>{channel?.title}</Title>
         <Left>
-          <Avatar src={avatar} alt={channelData.username} />
+          <Avatar src={avatar} alt={channel?.owner?.username} />
           <ChannelInfo>
-            <Username>{channelData.username}</Username>
-            <TotalFollowers>1000 Followers</TotalFollowers>
+            <Username>{channel?.owner?.username}</Username>
+            <TotalFollowers>
+              {channel?.numberOfFollowers}{" "}
+              {channel?.numberOfFollowers <= 1 ? "Follower" : "Followers"}
+            </TotalFollowers>
           </ChannelInfo>
           <Follow>Follow</Follow>
         </Left>

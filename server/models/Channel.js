@@ -10,7 +10,7 @@ const channelSchema = new mongoose.Schema(
     isActive: { type: Boolean, default: false },
     title: { type: String, default: defaultTitle },
     description: { type: String, default: defaultDescription },
-    avatar: {
+    thumbnail: {
       public_id: {
         type: String,
       },

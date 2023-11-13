@@ -61,6 +61,7 @@ export const getChannelDetails = catchAsyncErrors(async (req, res, next) => {
   }
 
   const { _id, title, description, owner, avatar } = channel;
+  const numberOfFollowers = channel.followers.length;
 
   const streamUrl = "http";
   const isOnline = false;
@@ -73,6 +74,7 @@ export const getChannelDetails = catchAsyncErrors(async (req, res, next) => {
       description,
       avatar,
       owner,
+      numberOfFollowers,
       streamUrl,
       isOnline,
     },
