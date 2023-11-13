@@ -6,6 +6,7 @@ import {
   getChannelDetails,
   getChannels,
   getFollowedChannel,
+  unfollowChannel,
 } from "../controllers/channelController.js";
 import { isAuthenticatedUser } from "../middlewares/auth.js";
 
@@ -13,11 +14,18 @@ const router = express.Router();
 
 const validator = ExpressValidator.createValidator({});
 
-router.post(
-  "/follow",
+router.put(
+  "/follow/:channelId",
   isAuthenticatedUser,
-  validator.body(channelDetailsSchema),
+  validator.params(channelDetailsSchema),
   followChannel
+);
+
+router.put(
+  "/unfollow/:channelId",
+  isAuthenticatedUser,
+  validator.params(channelDetailsSchema),
+  unfollowChannel
 );
 
 router.get("/followed", isAuthenticatedUser, getFollowedChannel);

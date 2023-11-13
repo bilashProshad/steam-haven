@@ -12,7 +12,7 @@ const Video = ({ channel }) => {
 
   const handleFollow = async () => {
     try {
-      await api.post(`/api/v1/channels/follow`, { channelId: channel._id });
+      await api.put(`/api/v1/channels/follow/${channel._id}`);
       setIsFollowing(true);
       setFollowersCount((prev) => prev + 1);
     } catch (error) {
@@ -22,7 +22,7 @@ const Video = ({ channel }) => {
 
   const handleUnfollow = async () => {
     try {
-      await api.post(`/api/v1/channels/follow`, { channelId: channel._id });
+      await api.put(`/api/v1/channels/unfollow/${channel._id}`);
       setIsFollowing(false);
       setFollowersCount((prev) => prev - 1);
     } catch (error) {

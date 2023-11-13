@@ -6,7 +6,7 @@ import jwt from "jsonwebtoken";
 
 export const followChannel = catchAsyncErrors(async (req, res, next) => {
   const { _id: userId } = req.user;
-  const { channelId } = req.body;
+  const { channelId } = req.params;
 
   const channel = await Channel.findByIdAndUpdate(
     channelId,
@@ -23,6 +23,37 @@ export const followChannel = catchAsyncErrors(async (req, res, next) => {
     userId,
     {
       $addToSet: { followedChannels: channelId },
+    },
+    { new: true }
+  );
+
+  res.status(200).json({
+    success: true,
+    user,
+    channel,
+    message: "Channel followed successfully",
+  });
+});
+
+export const unfollowChannel = catchAsyncErrors(async (req, res, next) => {
+  const { _id: userId } = req.user;
+  const { channelId } = req.params;
+
+  const channel = await Channel.findByIdAndUpdate(
+    channelId,
+    {
+      $pull: { followers: userId },
+    },
+    { new: true }
+  );
+  if (!channel) {
+    return next(new ErrorHandler(404, "Channel not found."));
+  }
+
+  const user = await User.findByIdAndUpdate(
+    userId,
+    {
+      $pull: { followedChannels: channelId },
     },
     { new: true }
   );
