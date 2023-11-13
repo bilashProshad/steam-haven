@@ -1,41 +1,34 @@
 import styled from "styled-components";
 import { useAuthContext } from "../../contexts/AuthContext";
 import { GoSidebarCollapse } from "react-icons/go";
-import { useState } from "react";
-import profile1 from "../../assets/profile-1.jpg";
+import { useEffect, useState } from "react";
 import FollowedChannelsList from "./FollowedChannelsList";
-
-const channelData = [
-  {
-    _id: 1,
-    username: "Bilash",
-    avatar: profile1,
-    isOnline: false,
-  },
-  {
-    _id: 2,
-    username: "John",
-    avatar: profile1,
-    isOnline: true,
-  },
-  {
-    _id: 3,
-    username: "Joyee",
-    avatar: profile1,
-    isOnline: false,
-  },
-  {
-    _id: 4,
-    username: "Max",
-    avatar: profile1,
-    isOnline: false,
-  },
-];
+import { toast } from "react-toastify";
+import api from "../../http";
 
 const Sidebar = () => {
   const [collapse, setCollapse] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [channels, setChannels] = useState([]);
 
   const { user } = useAuthContext();
+
+  useEffect(() => {
+    const fetchChannels = async () => {
+      try {
+        const { data } = await api.get("/api/v1/channels/followed");
+        setChannels(data.channels);
+        setLoading(false);
+      } catch (error) {
+        setLoading(false);
+        toast.error(error.response.data.message);
+      }
+    };
+
+    if (user) {
+      fetchChannels();
+    }
+  }, [user]);
 
   const collapseHandler = () => {
     setCollapse((prev) => !prev);
@@ -52,7 +45,9 @@ const Sidebar = () => {
             <GoSidebarCollapse />
           </CollapseButton>
         </Collapse>
-        <FollowedChannelsList data={channelData} collapse={collapse} />
+        {!loading && (
+          <FollowedChannelsList data={channels} collapse={collapse} />
+        )}
       </Wrapper>
     </SidebarContainer>
   );
