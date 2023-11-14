@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import avatar from "../assets/profile-1.jpg";
+import avatar from "../assets/Profile.png";
 import Button from "../components/Button";
 import Form from "../components/Form";
 import FormGroup from "../components/FormGroup";
@@ -33,6 +33,15 @@ const Profile = () => {
 
   const [edit, setEdit] = useState(false);
 
+  const [image, setImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState(avatar);
+
+  useEffect(() => {
+    if (user && user.avatar && user.avatar.public_id) {
+      setImagePreview(user.avatar.url);
+    }
+  }, [user]);
+
   useEffect(() => {
     if (error) {
       toast.error(error.data);
@@ -40,6 +49,42 @@ const Profile = () => {
       dispatch({ type: CLEAR_ERROR });
     }
   }, [error, dispatch]);
+
+  useEffect(() => {
+    async function updateImage(myForm) {
+      const config = {
+        headers: { "Content-Type": "multipart/form-data" },
+        withCredentials: true,
+      };
+      try {
+        dispatch({ type: UPDATE_PROFILE_REQUEST });
+        const { data } = await api.put(`/api/v1/user/avatar`, myForm, config);
+        dispatch({ type: UPDATE_PROFILE_SUCCESS, payload: data.user });
+        toast.success("The user updated successfully.");
+      } catch (error) {
+        dispatch({ type: UPDATE_PROFILE_FAILED, payload: error.response });
+      }
+    }
+
+    if (image) {
+      const myForm = new FormData();
+      myForm.append("image", image);
+      updateImage(myForm);
+    }
+  }, [image, dispatch]);
+
+  const setImageFile = (e) => {
+    setImage(e.target.files[0]);
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      if (reader.readyState === 2) {
+        setImagePreview(reader.result);
+      }
+    };
+
+    reader.readAsDataURL(e.target.files[0]);
+  };
 
   const submitHandler = async (e) => {
     e.preventDefault();
@@ -77,8 +122,14 @@ const Profile = () => {
       <Container>
         <Wrapper>
           <AvatarLabel htmlFor="avatar">
-            <Avatar src={avatar} alt="avatar" />
-            <AvatarInput type="file" id="avatar" name="image" />
+            <Avatar src={imagePreview} alt={user?.username} />
+            <AvatarInput
+              type="file"
+              id="avatar"
+              name="image"
+              accept="image/*"
+              onChange={setImageFile}
+            />
           </AvatarLabel>
           <Form onSubmit={submitHandler}>
             <FormGroup>
@@ -129,7 +180,15 @@ const Profile = () => {
               Cancel
             </Button>
           )}
-          {!edit && <Button onClick={() => setEdit(true)}>Edit</Button>}
+          {!edit && (
+            <Button
+              loading={loading}
+              disabled={loading}
+              onClick={() => setEdit(true)}
+            >
+              Edit
+            </Button>
+          )}
         </Wrapper>
       </Container>
     </Layout>

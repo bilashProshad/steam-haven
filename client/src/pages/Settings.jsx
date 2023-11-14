@@ -11,17 +11,12 @@ import TextArea from "../components/TextArea";
 import { useEffect, useRef, useState } from "react";
 import api from "../http";
 import { toast } from "react-toastify";
+import placeHolderThumbnail from "../assets/thumbnail.jpg";
 
 const Settings = () => {
   const [title, setTitle, titleError, setTitleError, isTitleTouched] =
     useInputValidate();
-  const [
-    avatarUrl,
-    setAvatarUrl,
-    avatarUrlError,
-    setAvatarUrlError,
-    isAvatarUrlTouched,
-  ] = useInputValidate();
+
   const [
     description,
     setDescription,
@@ -32,6 +27,8 @@ const Settings = () => {
 
   const [loading, setLoading] = useState(false);
   const [edit, setEdit] = useState(false);
+  const [image, setImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState(placeHolderThumbnail);
 
   const [streamKey, setStreamKey] = useState("");
 
@@ -51,6 +48,9 @@ const Settings = () => {
         setTitle(data.channel.title);
         setDescription(data.channel.description);
         setStreamKey(data.channel.streamKey);
+        if (data.channel.thumbnail && data.channel.thumbnail.public_id) {
+          setImagePreview(data.channel.thumbnail.url);
+        }
       } catch (error) {
         toast.error(error.response.data);
         toast.error(error.response.data?.message);
@@ -59,6 +59,44 @@ const Settings = () => {
 
     fetchSettings();
   }, [setDescription, setTitle]);
+
+  useEffect(() => {
+    async function updateImage(myForm) {
+      const config = {
+        headers: { "Content-Type": "multipart/form-data" },
+        withCredentials: true,
+      };
+      try {
+        setLoading(true);
+        await api.put(`/api/v1/settings/thumbnail`, myForm, config);
+        setLoading(false);
+        toast.success("The user updated successfully.");
+      } catch (error) {
+        toast.error(error.response.data);
+        toast.error(error.response.data?.message);
+        setLoading(false);
+      }
+    }
+
+    if (image) {
+      const myForm = new FormData();
+      myForm.append("image", image);
+      updateImage(myForm);
+    }
+  }, [image]);
+
+  const setImageFile = (e) => {
+    setImage(e.target.files[0]);
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      if (reader.readyState === 2) {
+        setImagePreview(reader.result);
+      }
+    };
+
+    reader.readAsDataURL(e.target.files[0]);
+  };
 
   const submitHandler = async (e) => {
     e.preventDefault();
@@ -69,11 +107,6 @@ const Settings = () => {
 
     if (title === "") {
       setTitleError(true);
-      return;
-    }
-
-    if (avatarUrl === "") {
-      setAvatarUrlError(true);
       return;
     }
 
@@ -125,19 +158,16 @@ const Settings = () => {
               )}
             </FormGroup>
             <FormGroup>
-              <Label htmlFor="email">Avatar Url</Label>
-              <Input
-                type="text"
-                id="avatarUrl"
-                value={avatarUrl}
-                onChange={(e) => setAvatarUrl(e.target.value)}
-                onBlur={isAvatarUrlTouched}
-                disabled={!edit}
-                required
-              />
-              {avatarUrlError && (
-                <ErrorMessage>** Enter valid url</ErrorMessage>
-              )}
+              <Label>
+                <ThumbnailTitle>Thumbnail</ThumbnailTitle>
+                <Thumbnail src={imagePreview} alt="thumbnail" />
+                <ThumbnailInput
+                  type="file"
+                  name="image"
+                  accept="image/*"
+                  onChange={setImageFile}
+                />
+              </Label>
             </FormGroup>
 
             <FormGroup>
@@ -173,7 +203,15 @@ const Settings = () => {
               Cancel
             </Button>
           )}
-          {!edit && <Button onClick={() => setEdit(true)}>Edit</Button>}
+          {!edit && (
+            <Button
+              loading={loading}
+              disabled={loading}
+              onClick={() => setEdit(true)}
+            >
+              Edit
+            </Button>
+          )}
         </Wrapper>
       </Container>
     </Layout>
@@ -212,6 +250,29 @@ const Wrapper = styled.div`
 const Label = styled.label`
   font-size: 1.6rem;
   cursor: pointer;
+  width: 100%;
+  position: relative;
+`;
+
+const Thumbnail = styled.img`
+  width: 100%;
+  height: 100%;
+  aspect-ratio: 16/9;
+  object-fit: cover;
+  transition: all 0.3s;
+
+  &:hover {
+    opacity: 0.7;
+  }
+`;
+
+const ThumbnailTitle = styled.p`
+  /* position: absolute; */
+  z-index: 1;
+`;
+
+const ThumbnailInput = styled.input`
+  display: none;
 `;
 
 const ErrorMessage = styled.span`

@@ -1,20 +1,37 @@
 import styled from "styled-components";
-import avatar from "../assets/profile-1.jpg";
+import avatar from "../assets/Profile.png";
 import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import placeholderThumbnail from "../assets/thumbnail.jpg";
 
-const ChannelCard = ({ _id, title, username, isOnline, avatarUrl }) => {
+const ChannelCard = ({ channel }) => {
+  const [imagePreview, setImagePreview] = useState(placeholderThumbnail);
+  const [avatarPreview, setAvatarPreview] = useState(avatar);
+
+  useEffect(() => {
+    if (channel.thumbnail && channel.thumbnail.public_id) {
+      setImagePreview(channel.thumbnail.url);
+    }
+  }, [channel]);
+
+  useEffect(() => {
+    if (channel.owner.avatar && channel.owner.avatar.public_id) {
+      setAvatarPreview(channel.owner.avatar.url);
+    }
+  }, [channel]);
+
   return (
-    <Card to={`/channel/${_id}`}>
-      <Thumbnail src={avatarUrl} alt={title} />
+    <Card to={`/channel/${channel._id}`}>
+      <Thumbnail src={imagePreview} alt={channel?.title} />
       <Details>
         <Left>
-          <Avatar src={avatar} alt={username} />
+          <Avatar src={avatarPreview} alt={channel?.owner?.username} />
           <Info>
-            <Title>{title}</Title>
-            <Username>{username}</Username>
+            <Title>{channel?.title}</Title>
+            <Username>{channel?.owner?.username}</Username>
           </Info>
         </Left>
-        <Right>{isOnline ? <Online /> : <Offline />}</Right>
+        <Right>{channel?.isOnline ? <Online /> : <Offline />}</Right>
       </Details>
     </Card>
   );

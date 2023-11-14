@@ -143,21 +143,11 @@ export const getChannelDetails = catchAsyncErrors(async (req, res, next) => {
 
 export const getChannels = catchAsyncErrors(async (req, res, next) => {
   const channels = await Channel.find({ isActive: true })
-    .select("title avatar owner")
-    .populate("owner", "username");
-
-  const modifiedChannels = channels.map((channel) => {
-    return {
-      _id: channel._id,
-      title: channel.title,
-      avatar: channel.avatar,
-      username: channel.owner.username,
-      isOnline: false,
-    };
-  });
+    .select("title thumbnail owner")
+    .populate("owner", "username avatar");
 
   res.status(200).json({
     success: true,
-    channels: modifiedChannels,
+    channels,
   });
 });
