@@ -1,8 +1,6 @@
 import { catchAsyncErrors } from "../middlewares/catchAsyncErrors.js";
 import { Channel } from "../models/Channel.js";
-import { User } from "../models/User.js";
-import { ErrorHandler } from "../utils/ErrorHandler.js";
-import { sendToken } from "../utils/sendJwtToken.js";
+import cloudinary from "cloudinary";
 
 export const getChannelSettings = catchAsyncErrors(async (req, res, next) => {
   const user = req.user;
@@ -31,7 +29,9 @@ export const updateChannelSettings = catchAsyncErrors(
         isActive: true,
       },
       { new: true }
-    ).populate("owner", "username");
+    )
+      .select("-messages -updatedAt")
+      .populate("owner", "username");
 
     return res.status(200).json({
       success: true,
@@ -39,3 +39,37 @@ export const updateChannelSettings = catchAsyncErrors(
     });
   }
 );
+
+export const updateThumbnail = catchAsyncErrors(async (req, res, next) => {
+  const user = req.user;
+
+  const channel = await Channel.findOne({ owner: user._id })
+    .select("-updatedAt -messages")
+    .populate("owner", "username");
+
+  if (channel.thumbnail && channel.thumbnail.public_id) {
+    const imageId = channel.thumbnail.public_id;
+    await cloudinary.v2.uploader.destroy(imageId);
+  }
+
+  const b64 = Buffer.from(req.file.buffer).toString("base64");
+  let dataURI = "data:" + req.file.mimetype + ";base64," + b64;
+
+  const uploadedThumbnail = await cloudinary.v2.uploader.upload(dataURI, {
+    resource_type: "image",
+    folder: "steam-haven/thumbnail",
+    crop: "scale",
+  });
+
+  channel.thumbnail = {
+    public_id: uploadedThumbnail.public_id,
+    url: uploadedThumbnail.secure_url,
+  };
+
+  await channel.save();
+
+  return res.status(200).json({
+    success: true,
+    channel,
+  });
+});
