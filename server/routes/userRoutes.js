@@ -2,6 +2,7 @@ import express from "express";
 import { isAuthenticatedUser } from "../middlewares/auth.js";
 import {
   profile,
+  updateAvatar,
   updatePassword,
   updateProfile,
 } from "../controllers/userController.js";
@@ -10,6 +11,8 @@ import {
   changePasswordSchema,
   updateProfileSchema,
 } from "../validateSchemas.js";
+import { catchAsyncErrors } from "../middlewares/catchAsyncErrors.js";
+import { upload } from "../cloudinary/index.js";
 
 const router = express.Router();
 const validator = ExpressValidation.createValidator({});
@@ -24,6 +27,13 @@ router
     isAuthenticatedUser,
     validator.body(changePasswordSchema),
     updatePassword
+  );
+router
+  .route("/avatar")
+  .put(
+    isAuthenticatedUser,
+    catchAsyncErrors(upload.single("image")),
+    updateAvatar
   );
 
 export const userRoutes = router;
