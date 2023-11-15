@@ -6,9 +6,18 @@ import ProfileMenu from "./ProfileMenu";
 import { useAuthContext } from "../../contexts/AuthContext";
 import ProfileMenuSm from "./ProfileMenuSm";
 import SearchBarSm from "./SearchBarSm";
+import profileImg from "../../assets/Profile.png";
+import { useEffect, useState } from "react";
 
 const Navbar = () => {
   const { user } = useAuthContext();
+  const [avatar, setAvatar] = useState(profileImg);
+
+  useEffect(() => {
+    if (user && user.avatar && user.avatar.public_id) {
+      setAvatar(user.avatar.url);
+    }
+  }, [user]);
 
   return (
     <Header>
@@ -50,11 +59,11 @@ const Navbar = () => {
           )}
           {user && (
             <ProfileMenuItem>
-              <ProfileMenu />
+              <ProfileMenu avatar={avatar} />
             </ProfileMenuItem>
           )}
           <ProfileMenuItemSm>
-            <ProfileMenuSm />
+            <ProfileMenuSm avatar={avatar} />
           </ProfileMenuItemSm>
         </NavLists>
       </Nav>

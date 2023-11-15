@@ -71,7 +71,7 @@ export const getFollowedChannel = catchAsyncErrors(async (req, res, next) => {
 
   const channels = await Channel.find({ followers: userId }).populate(
     "owner",
-    "username"
+    "username avatar"
   );
 
   res.status(200).json({

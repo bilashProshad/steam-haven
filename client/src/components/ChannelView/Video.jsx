@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import avatar from "../../assets/profile-1.jpg";
+import avatar from "../../assets/Profile.png";
 import { useState } from "react";
 import { toast } from "react-toastify";
 import api from "../../http";

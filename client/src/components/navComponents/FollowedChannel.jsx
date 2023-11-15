@@ -1,12 +1,21 @@
 import styled from "styled-components";
 import { Link } from "react-router-dom";
-import avatar from "../../assets/profile-1.jpg";
+import avatar from "../../assets/Profile.png";
+import { useEffect, useState } from "react";
 
 const FollowedChannel = ({ data, collapse }) => {
+  const [avatarPreview, setAvatarPreview] = useState(avatar);
+
+  useEffect(() => {
+    if (data.owner.avatar && data.owner.avatar.public_id) {
+      setAvatarPreview(data.owner.avatar.url);
+    }
+  }, [data]);
+
   return (
     <Container to={`/${data._id}`}>
       <Left>
-        <Avatar src={avatar} />
+        <Avatar src={avatarPreview} />
         {!collapse && <Username>{data?.owner?.username}</Username>}
       </Left>
       {/* --- */}

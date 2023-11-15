@@ -1,6 +1,5 @@
 import styled from "styled-components";
 import { useEffect, useState } from "react";
-import profile from "../../assets/Profile.png";
 import Backdrop from "../Backdrop";
 import { Link } from "react-router-dom";
 import { createPortal } from "react-dom";
@@ -14,7 +13,7 @@ import {
 import api from "../../http";
 import { toast } from "react-toastify";
 
-const ProfileMenu = () => {
+const ProfileMenu = ({ avatar }) => {
   const [showMenu, setShowMenu] = useState(false);
 
   const { dispatch, error } = useAuthContext();
@@ -43,7 +42,7 @@ const ProfileMenu = () => {
   return (
     <Profile onClick={showMenuHandler}>
       <ProfileImgContainer>
-        <ProfileImg src={profile} alt="profile photo" />
+        <ProfileImg src={avatar} alt="profile photo" />
       </ProfileImgContainer>
 
       {showMenu &&
