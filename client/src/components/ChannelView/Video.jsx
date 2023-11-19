@@ -3,6 +3,7 @@ import avatar from "../../assets/Profile.png";
 import { useState } from "react";
 import { toast } from "react-toastify";
 import api from "../../http";
+import { ReactFlvPlayer } from "react-flv-player";
 
 const Video = ({ channel }) => {
   const [followersCount, setFollowersCount] = useState(
@@ -32,7 +33,9 @@ const Video = ({ channel }) => {
 
   return (
     <Container>
-      <Stream>This is Video</Stream>
+      <Stream>
+        <ReactFlvPlayer width="100%" height="100%" url={channel.streamUrl} />
+      </Stream>
       <Description>
         <Title>{channel?.title}</Title>
         <Left>
@@ -61,9 +64,9 @@ const Container = styled.div`
 `;
 
 const Stream = styled.div`
-  background-color: #afabab;
+  /* background-color: #afabab; */
   width: 100%;
-  aspect-ratio: 16/9;
+  /* aspect-ratio: 16/9; */
 `;
 
 const Description = styled.div`

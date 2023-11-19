@@ -18,7 +18,7 @@ const channelSchema = new mongoose.Schema(
         type: String,
       },
     },
-    streamKey: { type: String, default: uuid() },
+    streamKey: { type: String, default: uuid },
     messages: {
       type: [{ type: mongoose.Schema.Types.ObjectId, ref: "Message" }],
       default: [],

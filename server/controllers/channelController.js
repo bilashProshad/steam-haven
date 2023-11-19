@@ -95,7 +95,7 @@ export const getChannelDetails = catchAsyncErrors(async (req, res, next) => {
   const { _id, title, description, owner, avatar } = channel;
   const numberOfFollowers = channel.followers.length;
 
-  const streamUrl = "http";
+  const streamUrl = `http://localhost:8000/live/${channel.streamKey}.flv`;
   const isOnline = false;
   let following = false;
 
