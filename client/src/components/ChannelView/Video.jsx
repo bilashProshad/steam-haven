@@ -34,7 +34,11 @@ const Video = ({ channel }) => {
   return (
     <Container>
       <Stream>
-        <ReactFlvPlayer width="100%" height="100%" url={channel.streamUrl} />
+        {channel.isOnline ? (
+          <ReactFlvPlayer width="100%" height="100%" url={channel.streamUrl} />
+        ) : (
+          <Offline>Channel is offline</Offline>
+        )}
       </Stream>
       <Description>
         <Title>{channel?.title}</Title>
@@ -64,9 +68,18 @@ const Container = styled.div`
 `;
 
 const Stream = styled.div`
-  /* background-color: #afabab; */
   width: 100%;
-  /* aspect-ratio: 16/9; */
+`;
+
+const Offline = styled.h2`
+  background-color: #afabab;
+  aspect-ratio: 16/9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+  font-size: 2vmax;
+  color: #333;
 `;
 
 const Description = styled.div`

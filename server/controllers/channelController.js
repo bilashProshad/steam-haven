@@ -3,6 +3,7 @@ import { Channel } from "../models/Channel.js";
 import { User } from "../models/User.js";
 import { ErrorHandler } from "../utils/ErrorHandler.js";
 import jwt from "jsonwebtoken";
+import axios from "axios";
 
 export const followChannel = catchAsyncErrors(async (req, res, next) => {
   const { _id: userId } = req.user;
@@ -69,10 +70,34 @@ export const unfollowChannel = catchAsyncErrors(async (req, res, next) => {
 export const getFollowedChannel = catchAsyncErrors(async (req, res, next) => {
   const { _id: userId } = req.user;
 
-  const channels = await Channel.find({ followers: userId }).populate(
-    "owner",
-    "username avatar"
+  const allChannel = await Channel.find({ followers: userId })
+    .select("title thumbnail owner streamKey")
+    .populate("owner", "username avatar");
+
+  const { data: activeStreams } = await axios.get(
+    `${process.env.RTMP_URL}/api/streams`
   );
+
+  let liveStreams = [];
+
+  for (const streamId in activeStreams?.live) {
+    if (
+      activeStreams.live[streamId].publisher &&
+      activeStreams.live[streamId].publisher !== null
+    ) {
+      liveStreams.push(streamId);
+    }
+  }
+
+  const channels = allChannel.map((channel) => {
+    return {
+      _id: channel._id,
+      title: channel.title,
+      owner: channel.owner,
+      thumbnail: channel.thumbnail,
+      isOnline: liveStreams.includes(channel.streamKey),
+    };
+  });
 
   res.status(200).json({
     success: true,
@@ -95,9 +120,26 @@ export const getChannelDetails = catchAsyncErrors(async (req, res, next) => {
   const { _id, title, description, owner, avatar } = channel;
   const numberOfFollowers = channel.followers.length;
 
-  const streamUrl = `http://localhost:8000/live/${channel.streamKey}.flv`;
-  const isOnline = false;
+  const streamUrl = `${process.env.RTMP_URL}/live/${channel.streamKey}.flv`;
+
   let following = false;
+
+  const { data: activeStreams } = await axios.get(
+    `${process.env.RTMP_URL}/api/streams`
+  );
+
+  let liveStreams = [];
+
+  for (const streamId in activeStreams?.live) {
+    if (
+      activeStreams.live[streamId].publisher &&
+      activeStreams.live[streamId].publisher !== null
+    ) {
+      liveStreams.push(streamId);
+    }
+  }
+
+  const isOnline = liveStreams.includes(channel.streamKey);
 
   const { token } = req.cookies;
 
@@ -142,9 +184,34 @@ export const getChannelDetails = catchAsyncErrors(async (req, res, next) => {
 });
 
 export const getChannels = catchAsyncErrors(async (req, res, next) => {
-  const channels = await Channel.find({ isActive: true })
-    .select("title thumbnail owner")
+  const allChannel = await Channel.find({ isActive: true })
+    .select("title thumbnail owner streamKey")
     .populate("owner", "username avatar");
+
+  const { data: activeStreams } = await axios.get(
+    `${process.env.RTMP_URL}/api/streams`
+  );
+
+  let liveStreams = [];
+
+  for (const streamId in activeStreams?.live) {
+    if (
+      activeStreams.live[streamId].publisher &&
+      activeStreams.live[streamId].publisher !== null
+    ) {
+      liveStreams.push(streamId);
+    }
+  }
+
+  const channels = allChannel.map((channel) => {
+    return {
+      _id: channel._id,
+      title: channel.title,
+      owner: channel.owner,
+      thumbnail: channel.thumbnail,
+      isOnline: liveStreams.includes(channel.streamKey),
+    };
+  });
 
   res.status(200).json({
     success: true,
